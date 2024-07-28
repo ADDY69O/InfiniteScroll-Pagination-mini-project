@@ -5,21 +5,7 @@ let totalPages = 0;
 
 const getProducts = async (page, limit, prev = false) => {
   try {
-    let response;
-    if (prev) {
-      response = await fetch(
-        `https://dummyjson.com/posts?limit=${totalLimit * page}&skip=${
-          (1 - 1) * limit
-        }`
-      );
-    } else {
-      response = await fetch(
-        `https://dummyjson.com/posts?limit=${totalLimit}&skip=${
-          (page - 1) * limit
-        }`
-      );
-    }
-    let data = await response.json();
+    const data = await apiServiceInstance.getProducts(page, limit, prev);
 
     if (totalRecords === 0) {
       totalRecords = data.total;
@@ -95,7 +81,6 @@ const getProducts = async (page, limit, prev = false) => {
     updatePageStyles();
   } catch (error) {
     console.error("Error fetching products:", error);
-    return;
   }
 };
 
