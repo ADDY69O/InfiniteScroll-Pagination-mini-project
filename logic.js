@@ -7,7 +7,7 @@ const getProducts = async (page, limit, prev = false) => {
   try {
     const data = await apiServiceInstance.getProducts(page, limit, prev);
 
-    if (totalRecords === 0) {
+    if (totalRecords !== data.total) {
       totalRecords = data.total;
       totalPages = Math.ceil(totalRecords / totalLimit);
 
