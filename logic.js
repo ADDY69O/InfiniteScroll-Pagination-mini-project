@@ -18,10 +18,17 @@ const getProducts = async (page, limit, prev = false) => {
         newPage.innerText = i;
         newPage.setAttribute("class", "pages");
         newPage.addEventListener("click", (e) => {
-          currentPage = Number(e.target.innerText);
-          updatePageStyles();
-          updateButtonStates();
-          getProducts(currentPage, totalLimit, true);
+          const newPageNumber = Number(e.target.innerText);
+          if (currentPage === newPageNumber) {
+            const msg = "can't call the same page twice";
+            console.log(msg);
+            Toastify({ text: msg, backgroundColor: "red" }).showToast();
+          } else {
+            currentPage = newPageNumber;
+            updatePageStyles();
+            updateButtonStates();
+            getProducts(currentPage, totalLimit, true);
+          }
         });
         paginationDiv.appendChild(newPage);
       }
