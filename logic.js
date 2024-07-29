@@ -2,16 +2,21 @@ let currentPage = 1;
 let totalLimit = 10;
 let totalRecords = 0;
 let totalPages = 0;
+let PreviousPage = 0;
 
-const getProducts = async (page, limit, prev = false) => {
+const getProducts = async (page, limit, prev = false, offsetChage = false) => {
   try {
     const data = await apiServiceInstance.getProducts(page, limit, prev);
 
-    if (totalRecords !== data.total) {
+    if (totalRecords !== data.total || offsetChage) {
       totalRecords = data.total;
       totalPages = Math.ceil(totalRecords / totalLimit);
 
       let paginationDiv = document.getElementsByClassName("pageBtn")[0];
+
+      if (offsetChage) {
+        paginationDiv.innerHTML = "";
+      }
 
       for (let i = 1; i <= totalPages; i++) {
         let newPage = document.createElement("div");
@@ -99,6 +104,9 @@ document.addEventListener("DOMContentLoaded", loadInitialProducts);
 
 document.querySelector(".Products").addEventListener("scroll", (event) => {
   let { clientHeight, scrollHeight, scrollTop } = event.target;
+
+  checkCurrentPage(clientHeight, scrollHeight, scrollTop);
+
   if (
     clientHeight + scrollTop + 1 >= scrollHeight &&
     currentPage < totalPages
@@ -125,18 +133,51 @@ const handleBack = () => {
   }
 };
 
-const updateButtonStates = () => {
-  document.querySelector(".btnPrev").disabled = currentPage === 1;
-  document.querySelector(".btnNext").disabled = currentPage === totalPages;
-  updatePageStyles();
+const updateButtonStates = (previous = false) => {
+  let page = previous ? PreviousPage : currentPage;
+  document.querySelector(".btnPrev").disabled = page === 1;
+  document.querySelector(".btnNext").disabled = page === totalPages;
+  if (previous) {
+    updatePageStyles(true);
+  } else {
+    updatePageStyles();
+  }
 };
 
-const updatePageStyles = () => {
+const updatePageStyles = (previous = false) => {
+  let pageNo = previous ? PreviousPage : currentPage;
   document.querySelectorAll(".pages").forEach((page, index) => {
-    if (index + 1 === currentPage) {
+    if (index + 1 === pageNo) {
       page.classList.add("active");
     } else {
       page.classList.remove("active");
     }
   });
+};
+
+document.getElementById("offset").addEventListener("click", (event) => {
+  const newTotalPages = event.target.value;
+
+  if (newTotalPages === totalLimit) {
+    console.log("already same page limit");
+  } else {
+    totalLimit = newTotalPages;
+    currentPage = 1;
+    updateButtonStates();
+    getProducts(currentPage, totalLimit, true, true);
+  }
+});
+
+const checkCurrentPage = (clientHeight, scrollHeight, scrollTop) => {
+  let reqDistribution = scrollHeight / currentPage;
+
+  let currentHeight = scrollTop + clientHeight;
+
+  for (let i = 1; i <= currentPage; i++) {
+    if (reqDistribution * i > currentHeight) {
+      PreviousPage = i;
+      updateButtonStates(true);
+      break;
+    }
+  }
 };

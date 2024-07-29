@@ -97,7 +97,7 @@
                 justify-content: center;
                 flex-wrap: wrap;
                 align-items: center;
-                margin-top: 15px;
+                margin-top: 15px;   
                 width: 100vw;
             }
 
@@ -110,6 +110,7 @@
                 color: white;
                 cursor: pointer;
                 margin: 0 10px;
+                margin-bottom: 12px;
             }
 
             .btnPrev:disabled, .btnNext:disabled {
@@ -119,14 +120,19 @@
 
             .pageBtn {
                 display: flex;
-                gap: 10px;
-                flex-wrap: wrap;
+                gap: 12px;
+                
+                width: 300px;
+                overflow-y: hidden;
+                overflow-x: scroll;
+
             }
 
             .pages {
                 width: 30px;
                 height: 30px;
                 display: flex;
+                padding: 3px 3px 4px 4px;
                 justify-content: center;
                 align-items: center;
                 border: 1px solid #ddd;
@@ -134,9 +140,27 @@
                 cursor: pointer;
             }
 
-            .pages.active {
+            .pages.active,.offsetMain {
                 background-color: #ff4757;
                 color: white;
+            }
+            
+
+            .offsetMain{
+                margin-left: 25px;
+                margin-bottom: 12px;
+                padding: 10px 20px;
+            }
+
+            .offset{
+                font-size: 22px;
+
+            }
+
+            #offset{
+                margin-left: 8px;
+                font-size: 15px;
+                text-decoration: none;
             }
 
             @media only screen and (max-width: 600px) {
@@ -149,4 +173,34 @@
                     
                 }
 
+                .pageBtn{
+                    width: 200px;
+                }
+
+
+            }
+
+
+            @media only screen and (max-width: 391px) {
+                .pageBtn{
+                    width: 100px;
+                    
+                }
+            }
+
+            @media only screen and (max-width: 295px) {
+                .btnPrev, .btnNext{
+                    padding: 5px 10px;
+                    font-size: 12px;
+                }
+
+                .pageBtn{
+                    width: 76px;
+                    
+                }
+
+                .offsetMain{
+                    padding: 5px 10px;
+                    font-size: 12px;
+                }
             }
