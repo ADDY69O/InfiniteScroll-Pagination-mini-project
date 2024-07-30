@@ -2,53 +2,69 @@ class Pagination {
   constructor(
     currentPage,
     totalLimit,
-    totalRecords,
     totalPages,
-    previousPage,
-    nextPage
+    totalRecords,
+    initialOffset,
+    previousPage
   ) {
     this.currentPage = currentPage;
     this.totalLimit = totalLimit;
-    this.totalRecords = totalRecords;
     this.totalPages = totalPages;
+    this.totalRecords = totalRecords;
+    this.initialOffset = initialOffset;
     this.previousPage = previousPage;
-    this.nextPage = nextPage;
   }
 
   getCurrentPage() {
     return this.currentPage;
   }
+
   setCurrentPage(page) {
     this.currentPage = page;
+  }
+  getPreviousPage() {
+    return this.previousPage;
+  }
+
+  setPreviousPage(page) {
+    this.previousPage = page;
   }
 
   getTotalLimit() {
     return this.totalLimit;
   }
+
   setTotalLimit(limit) {
     this.totalLimit = limit;
-  }
-
-  getTotalRecords() {
-    return this.totalRecords;
-  }
-  setTotalRecords(record) {
-    this.totalRecords = record;
   }
 
   getTotalPages() {
     return this.totalPages;
   }
-  setTotalPages(page) {
-    this.totalPages = page;
+
+  setTotalPages(pages) {
+    this.totalPages = pages;
   }
 
-  getPreviousPage() {
-    return this.previousPage;
+  getTotalRecords() {
+    return this.totalRecords;
   }
-  getPreviousPage(page) {
-    this.previousPage = page;
+
+  setTotalRecords(records) {
+    this.totalRecords = records;
+  }
+
+  incrementCurrentPage() {
+    if (this.currentPage < this.totalPages) {
+      this.currentPage++;
+    }
+  }
+
+  decrementCurrentPage() {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+    }
   }
 }
 
-const paginationInstance = new Pagination(1, 10, 0, 0, 0);
+const paginationInstance = new Pagination(1, 10, 0, 0, 0, 0);

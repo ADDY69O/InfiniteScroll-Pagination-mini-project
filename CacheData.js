@@ -1,4 +1,4 @@
-class cache {
+class Cache {
   constructor() {
     this.cache = {};
   }
@@ -8,12 +8,8 @@ class cache {
   }
 
   getCache(key) {
-    if (this.cache[key]) {
-      return this.cache[key];
-    } else {
-      return null;
-    }
+    return this.cache[key] || null;
   }
 }
 
-const CacheServiceInstance = new cache();
+const CacheServiceInstance = new Cache();

@@ -4,6 +4,20 @@
                 box-sizing: border-box;
             }
 
+            .loadingIndicator {
+                position: fixed;
+                top: 60%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                z-index: 1000;
+            }
+            
+            .loadingIndicator img {
+                width: 500px;
+                height: 400px;
+            }
+
+            
             body {
                 font-family: Arial, sans-serif;
                 background-color: #f0f2f5;

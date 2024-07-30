@@ -28,12 +28,11 @@ class BaseApiService {
 
   async _get(endPoints) {
     try {
-      let cachResponseData = CacheServiceInstance.getCache(
+      let cacheResponseData = CacheServiceInstance.getCache(
         this.baseUrl + endPoints
       );
-      if (cachResponseData == null) {
+      if (cacheResponseData == null) {
         const response = await fetch(this.baseUrl + endPoints);
-        console.log(response);
         if (!response.ok) {
           const errorData = await response.json();
           this.showMessage(errorData.message, "error");
@@ -44,7 +43,7 @@ class BaseApiService {
         CacheServiceInstance.setCache(this.baseUrl + endPoints, responseData);
         return responseData;
       } else {
-        return cachResponseData;
+        return cacheResponseData;
       }
     } catch (error) {
       this.showMessage("Internal Server error", "error");

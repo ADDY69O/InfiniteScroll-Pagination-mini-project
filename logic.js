@@ -1,49 +1,50 @@
-let currentPage = 1;
-let totalLimit = 10;
-let totalRecords = 0;
-let totalPages = 0;
-let PreviousPage = 0;
-
-const getProducts = async (page, limit, prev = false, offsetChage = false) => {
+const getProducts = async (page, limit, prev = false, offsetChange = false) => {
   try {
+    document.getElementById("loadingIndicator").style.display = "block";
     const data = await apiServiceInstance.getProducts(page, limit, prev);
 
-    if (totalRecords !== data.total || offsetChage) {
-      totalRecords = data.total;
-      totalPages = Math.ceil(totalRecords / totalLimit);
+    if (paginationInstance.getTotalRecords() !== data.total || offsetChange) {
+      paginationInstance.setTotalRecords(data.total);
+      paginationInstance.setTotalPages(
+        Math.ceil(data.total / paginationInstance.getTotalLimit())
+      );
 
-      let paginationDiv = document.getElementsByClassName("pageBtn")[0];
-
-      if (offsetChage) {
+      const paginationDiv = document.getElementsByClassName("pageBtn")[0];
+      if (offsetChange) {
         paginationDiv.innerHTML = "";
       }
 
-      for (let i = 1; i <= totalPages; i++) {
+      for (let i = 1; i <= paginationInstance.getTotalPages(); i++) {
         let newPage = document.createElement("div");
         newPage.innerText = i;
         newPage.setAttribute("class", "pages");
         newPage.addEventListener("click", (e) => {
           const newPageNumber = Number(e.target.innerText);
-          if (currentPage === newPageNumber) {
+          if (paginationInstance.getCurrentPage() === newPageNumber) {
             const msg = "can't call the same page twice";
             console.log(msg);
             Toastify({ text: msg, backgroundColor: "red" }).showToast();
           } else {
-            currentPage = newPageNumber;
+            paginationInstance.setCurrentPage(newPageNumber);
             updatePageStyles();
             updateButtonStates();
-            getProducts(currentPage, totalLimit, true);
+            getProducts(
+              paginationInstance.getCurrentPage(),
+              paginationInstance.getTotalLimit(),
+              true
+            );
           }
         });
         paginationDiv.appendChild(newPage);
       }
     }
 
-    let productDiv = document.getElementsByClassName("Products")[0];
+    const productDiv = document.getElementsByClassName("Products")[0];
     if (prev) {
       productDiv.innerHTML = "";
       window.scrollTo(0, 0);
     }
+
     data.posts.forEach((product) => {
       let newDiv = document.createElement("div");
       newDiv.setAttribute("class", "Product");
@@ -93,11 +94,17 @@ const getProducts = async (page, limit, prev = false, offsetChage = false) => {
     updatePageStyles();
   } catch (error) {
     console.error("Error fetching products:", error);
+  } finally {
+    // Hide loading indicator
+    document.getElementById("loadingIndicator").style.display = "none";
   }
 };
 
 const loadInitialProducts = () => {
-  getProducts(currentPage, totalLimit);
+  getProducts(
+    paginationInstance.getCurrentPage(),
+    paginationInstance.getTotalLimit()
+  );
 };
 
 document.addEventListener("DOMContentLoaded", loadInitialProducts);
@@ -107,45 +114,69 @@ document.querySelector(".Products").addEventListener("scroll", (event) => {
 
   checkCurrentPage(clientHeight, scrollHeight, scrollTop);
 
-  if (
-    clientHeight + scrollTop + 1 >= scrollHeight &&
-    currentPage < totalPages
-  ) {
-    currentPage += 1;
-    updateButtonStates();
-    getProducts(currentPage, totalLimit);
+  if (clientHeight + scrollTop + 1 >= scrollHeight) {
+    if (
+      paginationInstance.getCurrentPage() + 1 >
+      paginationInstance.getTotalPages()
+    ) {
+      const msg = "End of the page";
+      Toastify({ text: msg, backgroundColor: "red" }).showToast();
+    } else {
+      paginationInstance.incrementCurrentPage();
+      updateButtonStates();
+      getProducts(
+        paginationInstance.getCurrentPage(),
+        paginationInstance.getTotalLimit()
+      );
+    }
   }
 });
 
 const handleNext = () => {
-  if (currentPage < totalPages) {
-    currentPage += 1;
+  if (
+    paginationInstance.getCurrentPage() < paginationInstance.getTotalPages()
+  ) {
+    paginationInstance.incrementCurrentPage();
     updateButtonStates();
-    getProducts(currentPage, totalLimit);
+    getProducts(
+      paginationInstance.getCurrentPage(),
+      paginationInstance.getTotalLimit()
+    );
   }
 };
 
 const handleBack = () => {
-  if (currentPage > 1) {
-    currentPage -= 1;
+  if (paginationInstance.getCurrentPage() > 1) {
+    paginationInstance.decrementCurrentPage();
     updateButtonStates();
-    getProducts(currentPage, totalLimit, true);
+    getProducts(
+      paginationInstance.getCurrentPage(),
+      paginationInstance.getTotalLimit(),
+      true
+    );
   }
 };
 
-const updateButtonStates = (previous = false) => {
-  let page = previous ? PreviousPage : currentPage;
-  document.querySelector(".btnPrev").disabled = page === 1;
-  document.querySelector(".btnNext").disabled = page === totalPages;
-  if (previous) {
-    updatePageStyles(true);
-  } else {
-    updatePageStyles();
-  }
+const handleOffsetChange = (e) => {
+  let newLimit = Number(e.target.value);
+  paginationInstance.setTotalLimit(newLimit);
+  paginationInstance.setCurrentPage(1);
+  getProducts(
+    paginationInstance.getCurrentPage(),
+    paginationInstance.getTotalLimit(),
+    true,
+    true
+  );
 };
+
+document
+  .getElementById("offset")
+  .addEventListener("change", handleOffsetChange);
 
 const updatePageStyles = (previous = false) => {
-  let pageNo = previous ? PreviousPage : currentPage;
+  let pageNo = previous
+    ? paginationInstance.getPreviousPage()
+    : paginationInstance.getCurrentPage();
   document.querySelectorAll(".pages").forEach((page, index) => {
     if (index + 1 === pageNo) {
       page.classList.add("active");
@@ -155,27 +186,31 @@ const updatePageStyles = (previous = false) => {
   });
 };
 
-document.getElementById("offset").addEventListener("click", (event) => {
-  const newTotalPages = event.target.value;
+const updateButtonStates = (previous = false) => {
+  const btnPrev = document.querySelector(".btnPrev");
+  const btnNext = document.querySelector(".btnNext");
 
-  if (newTotalPages === totalLimit) {
-    console.log("already same page limit");
+  let page = previous
+    ? paginationInstance.getPreviousPage()
+    : paginationInstance.getCurrentPage();
+
+  btnPrev.disabled = page === 1;
+  btnNext.disabled = page === paginationInstance.getTotalPages();
+
+  if (previous) {
+    updatePageStyles(true);
   } else {
-    totalLimit = newTotalPages;
-    currentPage = 1;
-    updateButtonStates();
-    getProducts(currentPage, totalLimit, true, true);
+    updatePageStyles();
   }
-});
+};
 
 const checkCurrentPage = (clientHeight, scrollHeight, scrollTop) => {
-  let reqDistribution = scrollHeight / currentPage;
-
+  let reqDistribution = scrollHeight / paginationInstance.getCurrentPage();
   let currentHeight = scrollTop + clientHeight;
 
-  for (let i = 1; i <= currentPage; i++) {
+  for (let i = 1; i <= paginationInstance.getCurrentPage(); i++) {
     if (reqDistribution * i > currentHeight) {
-      PreviousPage = i;
+      paginationInstance.setPreviousPage(i);
       updateButtonStates(true);
       break;
     }

@@ -1,4 +1,4 @@
-const getLocalUserData = () => localStorage.getItem("useInfo");
+const getLocalUserData = () => localStorage.getItem("userInfo");
 const setLocalUserData = (data) => localStorage.setItem("userInfo", data);
 
 const LocalStoargeKeys = { USERINFO: "userInfo" };
