@@ -7,7 +7,7 @@ const loadInitialProducts = () => {
 
 document.addEventListener("DOMContentLoaded", loadInitialProducts);
 
-document.querySelector(".Products").addEventListener("scroll", (event) => {
+document.querySelector(".products").addEventListener("scroll", (event) => {
   let { clientHeight, scrollHeight, scrollTop } = event.target;
 
   checkCurrentPage(clientHeight, scrollHeight, scrollTop);

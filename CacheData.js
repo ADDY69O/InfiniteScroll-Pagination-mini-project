@@ -13,4 +13,4 @@ class Cache {
   }
 }
 
-const CacheServiceInstance = new Cache();
+const CacheService = new Cache();

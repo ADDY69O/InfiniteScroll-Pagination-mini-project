@@ -29,9 +29,7 @@ class BaseApiService {
 
   async _get(endPoints) {
     try {
-      let cacheResponseData = CacheServiceInstance.getCache(
-        this.baseUrl + endPoints
-      );
+      let cacheResponseData = CacheService.getCache(this.baseUrl + endPoints);
       if (cacheResponseData == null) {
         const response = await fetch(this.baseUrl + endPoints);
         if (!response.ok) {
@@ -41,7 +39,7 @@ class BaseApiService {
         }
 
         const responseData = await response.json();
-        CacheServiceInstance.setCache(this.baseUrl + endPoints, responseData);
+        CacheService.setCache(this.baseUrl + endPoints, responseData);
         return responseData;
       } else {
         return cacheResponseData;
@@ -54,10 +52,8 @@ class BaseApiService {
 
   showMessage(msg, type) {
     const text = msg || "Internal Server error";
-    const style =
-      type === "success"
-        ? { backgroundColor: "green" }
-        : { backgroundColor: "red" };
+
+    const style = { backgroundColor: type === "success" ? "green" : "red" };
 
     Toastify({ text, ...style }).showToast();
   }

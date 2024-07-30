@@ -74,15 +74,17 @@ class Pagination {
     offsetChange = false,
     previousPage = null
   ) => {
-    const productDiv = document.getElementsByClassName("Products")[0];
+    const productDiv = document.getElementsByClassName("products")[0];
 
     if (prev && previousPage !== null && previousPage > page) {
+      console.log("calling inside ");
       let itemsToRemove = (previousPage - page) * limit;
       while (itemsToRemove > 0 && productDiv.lastChild) {
         productDiv.removeChild(productDiv.lastChild);
         itemsToRemove--;
       }
       this.updatePageStyles();
+      this.updateButtonStates();
     } else {
       try {
         document.getElementById("loadingIndicator").style.display = "block";
@@ -131,8 +133,12 @@ class Pagination {
           }
         }
 
+        if (prev) {
+          productDiv.innerHTML = "";
+        }
+
         data.posts.forEach((product) => {
-          let newDiv = domCreateElement("div", "Product");
+          let newDiv = domCreateElement("div", "product");
 
           let title = domCreateElement("h1", "product__title", product.title);
 
@@ -181,7 +187,7 @@ class Pagination {
   };
 
   updateScroll = () => {
-    const productDiv = document.getElementsByClassName("Products")[0];
+    const productDiv = document.getElementsByClassName("products")[0];
     const singlePageHeight = productDiv.scrollHeight / this.getCurrentPage();
     productDiv.scrollTop = singlePageHeight * (this.getCurrentPage() - 1);
   };
@@ -196,15 +202,21 @@ class Pagination {
 
   handleBack = () => {
     if (this.getCurrentPage() > 1) {
+      let previousPage = this.getCurrentPage();
       this.decrementCurrentPage();
       this.updateButtonStates();
-      this.getProducts(this.getCurrentPage(), this.getTotalLimit(), true);
+      this.getProducts(
+        this.getCurrentPage(),
+        this.getTotalLimit(),
+        true,
+        false
+      );
     }
   };
 
   updateButtonStates = (previous = false) => {
-    const btnPrev = document.querySelector(".btnPrev");
-    const btnNext = document.querySelector(".btnNext");
+    const btnPrev = document.querySelector(".pagination_prev");
+    const btnNext = document.querySelector(".pagination__next");
 
     let page = previous ? this.getPreviousPage() : this.getCurrentPage();
 
