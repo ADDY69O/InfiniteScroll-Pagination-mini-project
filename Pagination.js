@@ -170,6 +170,7 @@ class Pagination {
           productDiv.appendChild(newDiv);
         });
 
+        this.updateScroll();
         this.updatePageStyles();
       } catch (error) {
         console.error("Error fetching products:", error);
@@ -177,6 +178,12 @@ class Pagination {
         document.getElementById("loadingIndicator").style.display = "none";
       }
     }
+  };
+
+  updateScroll = () => {
+    const productDiv = document.getElementsByClassName("Products")[0];
+    const singlePageHeight = productDiv.scrollHeight / this.getCurrentPage();
+    productDiv.scrollTop = singlePageHeight * (this.getCurrentPage() - 1);
   };
 
   handleNext = () => {
