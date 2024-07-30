@@ -23,6 +23,7 @@ class BaseApiService {
       return responseData;
     } catch (error) {
       this.showMessage("Internal Server error", "error");
+      throw error;
     }
   }
 
@@ -47,16 +48,18 @@ class BaseApiService {
       }
     } catch (error) {
       this.showMessage("Internal Server error", "error");
+      throw error;
     }
   }
 
   showMessage(msg, type) {
-    type === "success"
-      ? Toastify({ text: msg, backgroundColor: "green" }).showToast()
-      : Toastify({
-          text: msg || "Internal Server error",
-          backgroundColor: "red",
-        }).showToast();
+    const text = msg || "Internal Server error";
+    const style =
+      type === "success"
+        ? { backgroundColor: "green" }
+        : { backgroundColor: "red" };
+
+    Toastify({ text, ...style }).showToast();
   }
 
   getStorageData(key) {

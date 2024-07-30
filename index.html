@@ -10,15 +10,15 @@
 <body>
     <div id="main">
         <nav class="navbar">
-            <h1 class="navHead">PostShala</h1>
+            <h1 class="nav__head">PostShala</h1>
         </nav>
         <div class="Products"></div>
         <div class="pagination">
-            <button class="btnPrev" disabled onclick="handleBack()">Prev</button>
-            <div class="pageBtn"></div>
-            <button class="btnNext" onclick="handleNext()">Next</button>
+            <button class="btnPrev" disabled onclick="paginationInstance.handleBack()">Prev</button>
+            <div class="pagination__btn"></div>
+            <button class="btnNext" onclick="paginationInstance.handleNext()">Next</button>
 
-            <div class="offsetMain">
+            <div class="offsetMain"> 
                 <label for="offset">Page Size</label>
                 <select name="offset" id="offset">
                     <option value="10" selected>10</option>

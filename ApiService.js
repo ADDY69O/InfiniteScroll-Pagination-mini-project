@@ -4,21 +4,29 @@ class ApiService extends BaseApiService {
   }
 
   async loginUser(data) {
-    let responseData = await this.post("user/login", data);
-    if (responseData.token) {
-      this.setStorageData("userInfo", responseData.token);
-      this.showMessage(responseData.message, "success");
-    } else {
-      this.showMessage(responseData.message, "error");
+    try {
+      let responseData = await this.post("user/login", data);
+      if (responseData.token) {
+        this.setStorageData("userInfo", responseData.token);
+        this.showMessage(responseData.message, "success");
+      } else {
+        this.showMessage(responseData.message, "error");
+      }
+      return true;
+    } catch (error) {
+      console.error("Error while Login", error);
     }
-    return true;
   }
 
   async registerUser(data) {
-    let responseData = await this.post("user/register", data);
-    this.setStorageData("userInfo", responseData.token);
-    this.showMessage(responseData.message, "success");
-    return true;
+    try {
+      let responseData = await this.post("user/register", data);
+      this.setStorageData("userInfo", responseData.token);
+      this.showMessage(responseData.message, "success");
+      return true;
+    } catch (error) {
+      console.error("Error while Register User", error);
+    }
   }
 
   async getProducts(page, limit, prev = false) {
