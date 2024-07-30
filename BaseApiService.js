@@ -37,7 +37,7 @@ class BaseApiService {
         if (!response.ok) {
           const errorData = await response.json();
           this.showMessage(errorData.message, "error");
-          return;
+          throw new Error(errorData.message);
         }
 
         const responseData = await response.json();

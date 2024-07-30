@@ -20,7 +20,9 @@ document.querySelector(".Products").addEventListener("scroll", (event) => {
       const msg = "End of the page";
       Toastify({ text: msg, backgroundColor: "red" }).showToast();
     } else {
-      paginationInstance.incrementCurrentPage();
+      paginationInstance.setCurrentPage(
+        paginationInstance.getCurrentPage() + 1
+      );
       paginationInstance.updateButtonStates();
       paginationInstance.getProducts(
         paginationInstance.getCurrentPage(),
@@ -45,8 +47,15 @@ document.getElementById("offset").addEventListener("change", (e) => {
 const checkCurrentPage = (clientHeight, scrollHeight, scrollTop) => {
   let reqDistribution = scrollHeight / paginationInstance.getCurrentPage();
   let currentHeight = scrollTop + clientHeight;
-
   for (let i = 1; i <= paginationInstance.getCurrentPage(); i++) {
+    console.log(
+      reqDistribution,
+      reqDistribution * i,
+      i,
+      currentHeight,
+      scrollTop,
+      clientHeight
+    );
     if (reqDistribution * i > currentHeight) {
       paginationInstance.setPreviousPage(i);
       paginationInstance.updateButtonStates(true);

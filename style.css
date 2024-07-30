@@ -68,31 +68,32 @@
                 box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
             }
 
-            .productTitle {
+            .product__title {
                 font-size: 20px;
                 margin-bottom: 10px;
             }
 
-            .productBody {
+            .product__body {
                 font-size: 16px;
                 margin-bottom: 10px;
             }
 
-            .productTag {
+            .product__tag {
                 display: flex;
+                flex-direction: row;
                 flex-wrap: wrap;
                 gap: 10px;
                 margin-bottom: 10px;
             }
 
-            .tagTitle {
+            .tag__title {
                 font-size: 14px;
                 font-weight: bold;
                 margin-right: 5px;
                 margin-top: 6px;
             }
 
-            .tagEle {
+            .tag__ele {
                 background-color: #ff4757;
                 color: white;
                 font-size: 14px;
@@ -100,8 +101,8 @@
                 border-radius: 5px;
             }
 
-            .productViews,
-            .productReactions {
+            .product__views,
+            .product__reactions {
                 font-size: 14px;
                 color: #555;
             }
@@ -181,13 +182,13 @@
                 .Product{
                     width: 45%;
                 }
-                .productTag{
+                .product__tag{
                     display: flex;
                     flex-direction: column;
                     
                 }
 
-                .pageBtn{
+                .pagination__btn{
                     width: 200px;
                 }
 
@@ -196,7 +197,7 @@
 
 
             @media only screen and (max-width: 391px) {
-                .pageBtn{
+                .pagination__btn{
                     width: 100px;
                     
                 }
@@ -208,7 +209,7 @@
                     font-size: 12px;
                 }
 
-                .pageBtn{
+                .pagination__btn{
                     width: 76px;
                     
                 }

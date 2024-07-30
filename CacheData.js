@@ -8,7 +8,8 @@ class Cache {
   }
 
   getCache(key) {
-    return this.cache[key] || null;
+    if (this.cache[key]) return this.cache[key];
+    return null;
   }
 }
 
