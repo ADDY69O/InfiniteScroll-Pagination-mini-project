@@ -29,11 +29,13 @@ class ApiService extends BaseApiService {
     }
   }
 
-  async getProducts(page, limit, prev = false) {
+  async getProducts(page, limit, prev = false, previousPage = null) {
     try {
       let endpoint = `posts?limit=${limit}&skip=${(page - 1) * limit}`;
       if (prev) {
-        endpoint = `posts?limit=${limit * page}&skip=${(1 - 1) * limit}`;
+        endpoint = `posts?limit=${limit * (page - previousPage)}&skip=${
+          previousPage * limit
+        }`;
       }
       return await this._get(endpoint);
     } catch (error) {

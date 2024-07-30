@@ -48,14 +48,6 @@ const checkCurrentPage = (clientHeight, scrollHeight, scrollTop) => {
   let reqDistribution = scrollHeight / paginationInstance.getCurrentPage();
   let currentHeight = scrollTop + clientHeight;
   for (let i = 1; i <= paginationInstance.getCurrentPage(); i++) {
-    console.log(
-      reqDistribution,
-      reqDistribution * i,
-      i,
-      currentHeight,
-      scrollTop,
-      clientHeight
-    );
     if (reqDistribution * i > currentHeight) {
       paginationInstance.setPreviousPage(i);
       paginationInstance.updateButtonStates(true);

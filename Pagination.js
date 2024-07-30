@@ -22,6 +22,7 @@ class Pagination {
   setCurrentPage(page) {
     this.currentPage = page;
   }
+
   getPreviousPage() {
     return this.previousPage;
   }
@@ -66,11 +67,22 @@ class Pagination {
     }
   }
 
-  getProducts = async (page, limit, prev = false, offsetChange = false) => {
+  getProducts = async (
+    page,
+    limit,
+    prev = false,
+    offsetChange = false,
+    previousPage = null
+  ) => {
     try {
       document.getElementById("loadingIndicator").style.display = "block";
-      const data = await apiServiceInstance.getProducts(page, limit, prev);
-      console.log(data);
+      const data = await apiServiceInstance.getProducts(
+        page,
+        limit,
+        prev,
+        previousPage
+      );
+
       if (this.getTotalRecords() !== data.total || offsetChange) {
         this.setTotalRecords(data.total);
         this.setTotalPages(Math.ceil(data.total / this.getTotalLimit()));
@@ -83,18 +95,16 @@ class Pagination {
 
         for (let i = 1; i <= this.getTotalPages(); i++) {
           let newPage = domCreateElement("div", "pages", i);
-          // let newPage = document.createElement("div");
-          // newPage.innerText = i;
-          // newPage.setAttribute("class", "pages");
           newPage.addEventListener("click", (e) => {
             e.preventDefault();
             const newPageNumber = Number(e.target.innerText);
-            console.log(newPageNumber);
+
             if (this.getCurrentPage() === newPageNumber) {
               const msg = "can't call the same page twice";
-              console.log(msg);
+
               Toastify({ text: msg, backgroundColor: "red" }).showToast();
             } else {
+              let previousPage = this.getCurrentPage();
               this.setCurrentPage(newPageNumber);
               this.setPreviousPage(0);
               this.updateButtonStates();
@@ -102,7 +112,8 @@ class Pagination {
                 this.getCurrentPage(),
                 this.getTotalLimit(),
                 true,
-                false
+                false,
+                previousPage
               );
             }
           });
@@ -111,58 +122,59 @@ class Pagination {
       }
 
       const productDiv = document.getElementsByClassName("Products")[0];
-      if (prev) {
-        productDiv.innerHTML = "";
-        // productDiv.innerText = "";
-        console.log(productDiv.innerHTML);
 
-        // productDiv.scrollTop(0);
+      if (prev && this.getPreviousPage() > this.getCurrentPage()) {
+        let itemsToRemove =
+          (this.getPreviousPage() - this.getCurrentPage()) * limit;
+        while (itemsToRemove > 0 && productDiv.lastChild) {
+          productDiv.removeChild(productDiv.lastChild);
+          itemsToRemove--;
+        }
+      } else {
+        data.posts.forEach((product) => {
+          let newDiv = domCreateElement("div", "Product");
+
+          let title = domCreateElement("h1", "product__title", product.title);
+
+          let body = domCreateElement("p", "product__body", product.body);
+
+          let tagDiv = domCreateElement("div", "product__tag");
+
+          let tagTitle = domCreateElement("h3", "tag__title", "Tags:");
+
+          tagDiv.appendChild(tagTitle);
+
+          product.tags.forEach((tag) => {
+            let tagEle = domCreateElement("p", "tag__ele", tag);
+
+            tagDiv.appendChild(tagEle);
+          });
+
+          let views = domCreateElement(
+            "p",
+            "product__views",
+            `Views: ${product.views}`
+          );
+
+          let reactions = domCreateElement(
+            "p",
+            "product__reactions",
+            `Likes: ${product.reactions.likes} | Dislikes: ${product.reactions.dislikes}`
+          );
+          let hr = document.createElement("hr");
+
+          [title, hr, body, tagDiv, views, reactions].forEach((item) => {
+            newDiv.appendChild(item);
+          });
+
+          productDiv.appendChild(newDiv);
+        });
       }
-
-      data.posts.forEach((product) => {
-        let newDiv = domCreateElement("div", "Product");
-
-        let title = domCreateElement("h1", "product__title", product.title);
-
-        let body = domCreateElement("p", "product__body", product.body);
-
-        let tagDiv = domCreateElement("div", "product__tag");
-
-        let tagTitle = domCreateElement("h3", "tag__title", "Tags:");
-
-        tagDiv.appendChild(tagTitle);
-
-        product.tags.forEach((tag) => {
-          let tagEle = domCreateElement("p", "tag__ele", tag);
-
-          tagDiv.appendChild(tagEle);
-        });
-
-        let views = domCreateElement(
-          "p",
-          "product__views",
-          `Views: ${product.views}`
-        );
-
-        let reactions = domCreateElement(
-          "p",
-          "product__reactions",
-          `Likes: ${product.reactions.likes} | Dislikes: ${product.reactions.dislikes}`
-        );
-        let hr = document.createElement("hr");
-
-        [title, hr, body, tagDiv, views, reactions].forEach((item) => {
-          newDiv.appendChild(item);
-        });
-
-        productDiv.appendChild(newDiv);
-      });
 
       this.updatePageStyles();
     } catch (error) {
       console.error("Error fetching products:", error);
     } finally {
-      // Hide loading indicator
       document.getElementById("loadingIndicator").style.display = "none";
     }
   };
@@ -200,15 +212,18 @@ class Pagination {
   };
 
   updatePageStyles = (previous = false) => {
-    console.log(
-      "currentPageNo ",
-      this.getCurrentPage() + " " + "previousPageNo " + this.getPreviousPage()
-    );
     let pageNo = previous ? this.getPreviousPage() : this.getCurrentPage();
-    console.log(pageNo);
+
     document.querySelectorAll(".pages").forEach((page, index) => {
       if (index + 1 === pageNo) {
         page.classList.add("active");
+        const pgnBtn = document.querySelector(".pagination__btn");
+
+        let pageheight = pgnBtn.scrollWidth / this.getTotalPages();
+        let heightReq = pageheight * pageNo;
+        let leftHeight = heightReq - pgnBtn.clientWidth;
+
+        pgnBtn.scrollLeft = leftHeight;
       } else {
         page.classList.remove("active");
       }

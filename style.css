@@ -136,7 +136,6 @@
             .pagination__btn {
                 display: flex;
                 gap: 12px;
-                
                 width: 300px;
                 overflow-y: hidden;
                 overflow-x: scroll;
