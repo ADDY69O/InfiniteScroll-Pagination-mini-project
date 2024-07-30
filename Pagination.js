@@ -74,63 +74,63 @@ class Pagination {
     offsetChange = false,
     previousPage = null
   ) => {
-    try {
-      document.getElementById("loadingIndicator").style.display = "block";
-      const data = await apiServiceInstance.getProducts(
-        page,
-        limit,
-        prev,
-        previousPage
-      );
+    const productDiv = document.getElementsByClassName("Products")[0];
 
-      if (this.getTotalRecords() !== data.total || offsetChange) {
-        this.setTotalRecords(data.total);
-        this.setTotalPages(Math.ceil(data.total / this.getTotalLimit()));
-
-        const paginationDiv =
-          document.getElementsByClassName("pagination__btn")[0];
-        if (offsetChange) {
-          paginationDiv.innerHTML = "";
-        }
-
-        for (let i = 1; i <= this.getTotalPages(); i++) {
-          let newPage = domCreateElement("div", "pages", i);
-          newPage.addEventListener("click", (e) => {
-            e.preventDefault();
-            const newPageNumber = Number(e.target.innerText);
-
-            if (this.getCurrentPage() === newPageNumber) {
-              const msg = "can't call the same page twice";
-
-              Toastify({ text: msg, backgroundColor: "red" }).showToast();
-            } else {
-              let previousPage = this.getCurrentPage();
-              this.setCurrentPage(newPageNumber);
-              this.setPreviousPage(0);
-              this.updateButtonStates();
-              this.getProducts(
-                this.getCurrentPage(),
-                this.getTotalLimit(),
-                true,
-                false,
-                previousPage
-              );
-            }
-          });
-          paginationDiv.appendChild(newPage);
-        }
+    if (prev && previousPage !== null && previousPage > page) {
+      let itemsToRemove = (previousPage - page) * limit;
+      while (itemsToRemove > 0 && productDiv.lastChild) {
+        productDiv.removeChild(productDiv.lastChild);
+        itemsToRemove--;
       }
+      this.updatePageStyles();
+    } else {
+      try {
+        document.getElementById("loadingIndicator").style.display = "block";
+        const data = await apiServiceInstance.getProducts(
+          page,
+          limit,
+          prev,
+          previousPage
+        );
 
-      const productDiv = document.getElementsByClassName("Products")[0];
+        if (this.getTotalRecords() !== data.total || offsetChange) {
+          this.setTotalRecords(data.total);
+          this.setTotalPages(Math.ceil(data.total / this.getTotalLimit()));
 
-      if (prev && this.getPreviousPage() > this.getCurrentPage()) {
-        let itemsToRemove =
-          (this.getPreviousPage() - this.getCurrentPage()) * limit;
-        while (itemsToRemove > 0 && productDiv.lastChild) {
-          productDiv.removeChild(productDiv.lastChild);
-          itemsToRemove--;
+          const paginationDiv =
+            document.getElementsByClassName("pagination__btn")[0];
+          if (offsetChange) {
+            paginationDiv.innerHTML = "";
+          }
+
+          for (let i = 1; i <= this.getTotalPages(); i++) {
+            let newPage = domCreateElement("div", "pages", i);
+            newPage.addEventListener("click", (e) => {
+              e.preventDefault();
+              const newPageNumber = Number(e.target.innerText);
+
+              if (this.getCurrentPage() === newPageNumber) {
+                const msg = "can't call the same page twice";
+
+                Toastify({ text: msg, backgroundColor: "red" }).showToast();
+              } else {
+                let previousPage = this.getCurrentPage();
+                this.setCurrentPage(newPageNumber);
+                this.setPreviousPage(0);
+                this.updateButtonStates();
+                this.getProducts(
+                  this.getCurrentPage(),
+                  this.getTotalLimit(),
+                  true,
+                  false,
+                  previousPage
+                );
+              }
+            });
+            paginationDiv.appendChild(newPage);
+          }
         }
-      } else {
+
         data.posts.forEach((product) => {
           let newDiv = domCreateElement("div", "Product");
 
@@ -169,13 +169,13 @@ class Pagination {
 
           productDiv.appendChild(newDiv);
         });
-      }
 
-      this.updatePageStyles();
-    } catch (error) {
-      console.error("Error fetching products:", error);
-    } finally {
-      document.getElementById("loadingIndicator").style.display = "none";
+        this.updatePageStyles();
+      } catch (error) {
+        console.error("Error fetching products:", error);
+      } finally {
+        document.getElementById("loadingIndicator").style.display = "none";
+      }
     }
   };
 
