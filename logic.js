@@ -32,7 +32,7 @@ document.querySelector(".products").addEventListener("scroll", (event) => {
   }
 });
 
-document.getElementById("offset").addEventListener("change", (e) => {
+document.getElementById("offset__Select").addEventListener("change", (e) => {
   let newLimit = Number(e.target.value);
   paginationInstance.setTotalLimit(newLimit);
   paginationInstance.setCurrentPage(1);

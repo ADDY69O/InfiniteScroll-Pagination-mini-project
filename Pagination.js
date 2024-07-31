@@ -78,15 +78,30 @@ class Pagination {
 
     if (prev && previousPage !== null && previousPage > page) {
       console.log("calling inside ");
+      console.trace();
+      console.log(
+        "get current page " +
+          page +
+          " " +
+          this.getCurrentPage() +
+          " : current page  " +
+          " " +
+          previousPage +
+          " here's the previous page " +
+          this.getPreviousPage()
+      );
+
       let itemsToRemove = (previousPage - page) * limit;
       while (itemsToRemove > 0 && productDiv.lastChild) {
         productDiv.removeChild(productDiv.lastChild);
         itemsToRemove--;
       }
-      this.updatePageStyles();
+      this.setPreviousPage(this.getCurrentPage());
       this.updateButtonStates();
+      this.updateScroll();
     } else {
       try {
+        console.trace();
         document.getElementById("loader").style.display = "block";
         const data = await apiServiceInstance.getProducts(
           page,
@@ -108,7 +123,6 @@ class Pagination {
           for (let i = 1; i <= this.getTotalPages(); i++) {
             let newPage = domCreateElement("div", "pages", i);
             newPage.addEventListener("click", (e) => {
-              e.preventDefault();
               const newPageNumber = Number(e.target.innerText);
 
               if (this.getCurrentPage() === newPageNumber) {
@@ -118,8 +132,8 @@ class Pagination {
               } else {
                 let previousPage = this.getCurrentPage();
                 this.setCurrentPage(newPageNumber);
-                this.setPreviousPage(0);
-                this.updateButtonStates();
+                this.setPreviousPage(previousPage);
+                // this.updateButtonStates();
                 this.getProducts(
                   this.getCurrentPage(),
                   this.getTotalLimit(),
@@ -176,8 +190,8 @@ class Pagination {
           productDiv.appendChild(newDiv);
         });
 
-        this.updateScroll();
         this.updatePageStyles();
+        this.updateScroll();
       } catch (error) {
         console.error("Error fetching products:", error);
       } finally {
@@ -188,8 +202,13 @@ class Pagination {
 
   updateScroll = () => {
     const productDiv = document.getElementsByClassName("products")[0];
+    productDiv.scrollTop = 0;
     const singlePageHeight = productDiv.scrollHeight / this.getCurrentPage();
-    productDiv.scrollTop = singlePageHeight * (this.getCurrentPage() - 1);
+
+    productDiv.scrollTop =
+      singlePageHeight * (this.getCurrentPage() - 1) +
+      1 -
+      productDiv.clientHeight;
   };
 
   handleNext = () => {
@@ -202,14 +221,23 @@ class Pagination {
 
   handleBack = () => {
     if (this.getCurrentPage() > 1) {
-      let previousPage = this.getCurrentPage();
-      this.decrementCurrentPage();
-      this.updateButtonStates();
+      let previousPage;
+      // if (this.getPreviousPage() < this.getCurrentPage()) {
+      //   previousPage = this.getPreviousPage();
+      //   this.setCurrentPage(this.getPreviousPage() - 1);
+      //   this.setPreviousPage(previousPage);
+      // } else {
+      previousPage = this.getCurrentPage();
+      this.setCurrentPage(this.currentPage - 1);
+      this.setPreviousPage(previousPage);
+      // }
+
       this.getProducts(
         this.getCurrentPage(),
         this.getTotalLimit(),
         true,
-        false
+        false,
+        previousPage
       );
     }
   };
