@@ -18,9 +18,9 @@
             <div class="pagination__btn"></div>
             <button class="pagination__next" onclick="paginationInstance.handleNext()">Next</button>
 
-            <div class="offsetMain"> 
-                <label for="offset">Page Size</label>
-                <select name="offset" id="offset">
+            <div class="offset"> 
+                <label for="offset__Select">Page Size</label>
+                <select name="offset__Select" id="offset__Select">
                     <option value="10" selected>10</option>
                     <option value="20">20</option>
                     <option value="50">50</option>
@@ -28,8 +28,8 @@
                 </select>
             </div>
         </section>
-        <div id="loadingIndicator" class="loadingIndicator" style="display: none;">
-            <img class="loadingIndicator__img" src="https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExdzR2d2ZwajJ5ajJ1YjY2MW9mYXI4ajczZXkzZjd5cWhjamZtdjd1aSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/9X3Fl6AdLfH5WcdHdt/giphy.webp" alt="Loading...">
+        <div id="loader" class="loader" style="display: none;">
+            <img class="loader__img" src="https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExdzR2d2ZwajJ5ajJ1YjY2MW9mYXI4ajczZXkzZjd5cWhjamZtdjd1aSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/9X3Fl6AdLfH5WcdHdt/giphy.webp" alt="Loading...">
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>

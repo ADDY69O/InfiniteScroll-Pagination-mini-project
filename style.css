@@ -4,7 +4,7 @@
                 box-sizing: border-box;
             }
 
-            .loadingIndicator {
+            .loader {
                 position: fixed;
                 top: 60%;
                 left: 50%;
@@ -12,7 +12,7 @@
                 z-index: 1000;
             }
             
-            .loadingIndicator__img {
+            .loader__img {
                 width: 500px;
                 height: 400px;
             }
@@ -154,24 +154,24 @@
                 cursor: pointer;
             }
 
-            .pages.active,.offsetMain {
+            .pages.active,.offset {
                 background-color: #ff4757;
                 color: white;
             }
             
 
-            .offsetMain{
+            .offset{
                 margin-left: 25px;
                 margin-bottom: 12px;
                 padding: 10px 20px;
             }
 
-            .offset{
+            .offset__Select{
                 font-size: 22px;
 
             }
 
-            #offset{
+            #offset__Select{
                 margin-left: 8px;
                 font-size: 15px;
                 text-decoration: none;
@@ -213,7 +213,7 @@
                     
                 }
 
-                .offsetMain{
+                .offset{
                     padding: 5px 10px;
                     font-size: 12px;
                 }

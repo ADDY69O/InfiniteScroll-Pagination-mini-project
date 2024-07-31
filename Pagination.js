@@ -87,7 +87,7 @@ class Pagination {
       this.updateButtonStates();
     } else {
       try {
-        document.getElementById("loadingIndicator").style.display = "block";
+        document.getElementById("loader").style.display = "block";
         const data = await apiServiceInstance.getProducts(
           page,
           limit,
@@ -181,7 +181,7 @@ class Pagination {
       } catch (error) {
         console.error("Error fetching products:", error);
       } finally {
-        document.getElementById("loadingIndicator").style.display = "none";
+        document.getElementById("loader").style.display = "none";
       }
     }
   };
