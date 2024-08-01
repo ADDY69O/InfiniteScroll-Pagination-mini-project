@@ -13,6 +13,7 @@ class Pagination {
     this.totalRecords = totalRecords;
     this.initialOffset = initialOffset;
     this.previousPage = previousPage;
+    this.previousPageLimit = 0;
   }
 
   getCurrentPage() {
@@ -77,20 +78,6 @@ class Pagination {
     const productDiv = document.getElementsByClassName("products")[0];
 
     if (prev && previousPage !== null && previousPage > page) {
-      console.log("calling inside ");
-      console.trace();
-      console.log(
-        "get current page " +
-          page +
-          " " +
-          this.getCurrentPage() +
-          " : current page  " +
-          " " +
-          previousPage +
-          " here's the previous page " +
-          this.getPreviousPage()
-      );
-
       let itemsToRemove = (previousPage - page) * limit;
       while (itemsToRemove > 0 && productDiv.lastChild) {
         productDiv.removeChild(productDiv.lastChild);
@@ -107,7 +94,8 @@ class Pagination {
           page,
           limit,
           prev,
-          previousPage
+          previousPage,
+          offsetChange
         );
 
         if (this.getTotalRecords() !== data.total || offsetChange) {
@@ -147,7 +135,7 @@ class Pagination {
           }
         }
 
-        if (prev) {
+        if (prev || offsetChange) {
           productDiv.innerHTML = "";
         }
 

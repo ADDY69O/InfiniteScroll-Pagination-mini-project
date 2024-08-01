@@ -34,7 +34,9 @@ document.querySelector(".products").addEventListener("scroll", (event) => {
 
 document.getElementById("offset__Select").addEventListener("change", (e) => {
   let newLimit = Number(e.target.value);
+  paginationInstance.previousPageLimit = paginationInstance.getTotalLimit();
   paginationInstance.setTotalLimit(newLimit);
+  paginationInstance.setPreviousPage(paginationInstance.getCurrentPage());
   paginationInstance.setCurrentPage(1);
   paginationInstance.getProducts(
     paginationInstance.getCurrentPage(),
