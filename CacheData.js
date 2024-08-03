@@ -46,6 +46,7 @@ class Cache {
   };
 
   updateTouchedForNewLimit(newLimit) {
+    const totalData = paginationInstance.getTotalRecords();
     if (paginationInstance.previousPageLimit > newLimit) {
       // create automatically pages
       const totalItems = this.isTouched ? this.isTouched.length : 0;
@@ -56,7 +57,18 @@ class Cache {
       let adjustedTouched = [];
 
       for (let i = 0; i < totalItems; i++) {
-        let { page } = this.isTouched[i];
+        let newTotalPages = Math.ceil(totalData / newLimit);
+        let page;
+        if (this.isTouched[i].page > newTotalPages) {
+          if (i == 0) {
+            page = 1;
+          } else {
+            page = this.isTouched[i - 1].page + 1;
+          }
+        } else {
+          page = this.isTouched[i].page;
+        }
+
         adjustedTouched.push({ page, limit: newLimit });
         let nextNewPage = page + 1;
         while (remainingPage > 0 && this.getPageIndex(nextNewPage) === -1) {
@@ -89,7 +101,17 @@ class Cache {
       console.log(reqIteration);
       if (remainingRecords > 0) {
         for (let i = 0; i < reqIteration; i++) {
-          const { page, limit } = this.isTouched[i];
+          let newTotalPages = Math.ceil(totalData / newLimit);
+          let page;
+          if (this.isTouched[i].page > newTotalPages) {
+            if (i == 0) {
+              page = 1;
+            } else {
+              page = this.isTouched[i - 1].page + 1;
+            }
+          } else {
+            page = this.isTouched[i].page;
+          }
 
           adjustedTouched.push({ page, limit: newLimit });
         }
@@ -104,9 +126,22 @@ class Cache {
       } else {
         for (let i = 0; i < reqIteration; i++) {
           let page;
+
           if (i > this.isTouched.length) {
             page = prevTakeEle;
             prevTakeEle += 1;
+          } else {
+            page = this.isTouched[i].page;
+          }
+
+          let newTotalPages = Math.ceil(totalData / newLimit);
+
+          if (this.isTouched[i].page > newTotalPages) {
+            if (i == 0) {
+              page = 1;
+            } else {
+              page = this.isTouched[i - 1].page + 1;
+            }
           } else {
             page = this.isTouched[i].page;
           }

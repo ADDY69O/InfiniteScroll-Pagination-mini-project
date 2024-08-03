@@ -89,6 +89,7 @@ const checkCurrentPage = (clientHeight, scrollHeight, scrollTop) => {
       let previousDataIndex = -1;
 
       previousDataIndex = CacheService.getPageIndex(currentP - 1);
+      nextDataIndex = CacheService.getPageIndex(currentP + 1);
 
       console.log(
         "distribution " +
@@ -96,15 +97,36 @@ const checkCurrentPage = (clientHeight, scrollHeight, scrollTop) => {
           " current i value " +
           i +
           " clientHeight " +
-          clientHeight
+          clientHeight +
+          " scrollHeight " +
+          scrollHeight +
+          " currrentHeight " +
+          currentHeight
       );
 
       if (
+        i < CacheService.isTouched.length &&
+        reqDistribution * i > currentHeight &&
+        reqDistribution * i < currentHeight + 10 &&
+        nextDataIndex === -1
+      ) {
+        console.log(" current page increasing " + currentP + 1);
+        paginationInstance.getProducts(
+          currentP + 1,
+          paginationInstance.getTotalLimit(),
+          true,
+          false,
+          currentP,
+          true,
+          true
+        );
+      } else if (
         i > 1 &&
         reqDistribution * i > currentHeight &&
         reqDistribution * (i - 1) > currentHeight - 10 &&
         previousDataIndex === -1
       ) {
+        console.log(" current page decreas " + currentP - 1);
         paginationInstance.getProducts(
           currentP - 1,
           paginationInstance.getTotalLimit(),
