@@ -73,22 +73,85 @@ class Pagination {
     limit,
     prev = false,
     offsetChange = false,
-    previousPage = null
+    previousPage = null,
+    isgap = false,
+    isScrolling = false
   ) => {
-    const productDiv = document.getElementsByClassName("products")[0];
+    try {
+      const productDiv = document.querySelector(".products");
+      const productDiv2 = document.querySelector(".products");
+      console.log(page, limit, prev, offsetChange, previousPage, isgap);
+      if (
+        isScrolling ||
+        (prev && previousPage !== null && previousPage > page)
+      ) {
+        const data = await apiServiceInstance.getProducts(
+          page,
+          limit,
+          prev,
+          previousPage,
+          offsetChange
+        );
 
-    if (prev && previousPage !== null && previousPage > page) {
-      let itemsToRemove = (previousPage - page) * limit;
-      while (itemsToRemove > 0 && productDiv.lastChild) {
-        productDiv.removeChild(productDiv.lastChild);
-        itemsToRemove--;
-      }
-      this.setPreviousPage(this.getCurrentPage());
-      this.updateButtonStates();
-      this.updateScroll();
-    } else {
-      try {
-        console.trace();
+        const index = CacheService.getSmallerPageIndex(page);
+
+        let indexAfterAdd = (index - 1) * limit;
+
+        const allElements = Array.from(productDiv.childNodes);
+
+        data.posts.forEach((product, idx) => {
+          try {
+            let newDiv = domCreateElement("div", "product");
+            let title = domCreateElement("h1", "product__title", product.title);
+            let body = domCreateElement("p", "product__body", product.body);
+
+            let tagDiv = domCreateElement("div", "product__tag");
+            let tagTitle = domCreateElement("h3", "tag__title", "Tags:");
+            tagDiv.appendChild(tagTitle);
+
+            product.tags.forEach((tag) => {
+              let tagEle = domCreateElement("p", "tag__ele", tag);
+              tagDiv.appendChild(tagEle);
+            });
+
+            let views = domCreateElement(
+              "p",
+              "product__views",
+              `Views: ${product.views}`
+            );
+
+            let reactions = domCreateElement(
+              "p",
+              "product__reactions",
+              `Likes: ${product.reactions.likes} | Dislikes: ${product.reactions.dislikes}`
+            );
+
+            let hr = document.createElement("hr");
+
+            [title, hr, body, tagDiv, views, reactions].forEach((item) => {
+              newDiv.appendChild(item);
+            });
+
+            if (indexAfterAdd < productDiv.childNodes.length) {
+              productDiv.insertBefore(
+                newDiv,
+                productDiv.childNodes[indexAfterAdd]
+              );
+            } else {
+              productDiv.appendChild(newDiv);
+            }
+
+            indexAfterAdd += 1;
+          } catch (error) {
+            console.error("Error adding product:", error);
+          }
+        });
+
+        this.setPreviousPage(page);
+        this.updateButtonStates(true);
+        this.updateScroll(true);
+      } else {
+        // console.trace();
         document.getElementById("loader").style.display = "block";
         const data = await apiServiceInstance.getProducts(
           page,
@@ -110,6 +173,7 @@ class Pagination {
 
           for (let i = 1; i <= this.getTotalPages(); i++) {
             let newPage = domCreateElement("div", "pages", i);
+            newPage.setAttribute("id", i);
             newPage.addEventListener("click", (e) => {
               const newPageNumber = Number(e.target.innerText);
 
@@ -118,24 +182,39 @@ class Pagination {
 
                 Toastify({ text: msg, backgroundColor: "red" }).showToast();
               } else {
+                const previousCachedData = CacheService.isTouched;
+
                 let previousPage = this.getCurrentPage();
-                this.setCurrentPage(newPageNumber);
-                this.setPreviousPage(previousPage);
-                // this.updateButtonStates();
-                this.getProducts(
-                  this.getCurrentPage(),
-                  this.getTotalLimit(),
-                  true,
-                  false,
-                  previousPage
-                );
+                if (previousPage > newPageNumber) {
+                  // this.setCurrentPage(newPageNumber);
+                  // this.setPreviousPage(previousPage);
+                  // this.updateButtonStates();
+                  this.getProducts(
+                    newPageNumber,
+                    this.getTotalLimit(),
+                    true,
+                    false,
+                    previousPage
+                  );
+                } else {
+                  this.setCurrentPage(newPageNumber);
+                  this.setPreviousPage(previousPage);
+                  // this.updateButtonStates();
+                  this.getProducts(
+                    this.getCurrentPage(),
+                    this.getTotalLimit(),
+                    false,
+                    false,
+                    previousPage
+                  );
+                }
               }
             });
             paginationDiv.appendChild(newPage);
           }
         }
 
-        if (prev || offsetChange) {
+        if (offsetChange) {
           productDiv.innerHTML = "";
         }
 
@@ -178,25 +257,35 @@ class Pagination {
           productDiv.appendChild(newDiv);
         });
 
-        this.updatePageStyles();
-        this.updateScroll();
-      } catch (error) {
-        console.error("Error fetching products:", error);
-      } finally {
-        document.getElementById("loader").style.display = "none";
+        if (prev) {
+          this.setPreviousPage(page);
+          this.updateButtonStates(true);
+
+          this.updateScroll(true);
+        } else {
+          this.updateButtonStates();
+
+          this.updateScroll();
+        }
       }
+    } catch (error) {
+      console.error("Error fetching products:", error);
+    } finally {
+      document.getElementById("loader").style.display = "none";
     }
   };
 
-  updateScroll = () => {
+  updateScroll = (prev = false) => {
     const productDiv = document.getElementsByClassName("products")[0];
-    productDiv.scrollTop = 0;
-    const singlePageHeight = productDiv.scrollHeight / this.getCurrentPage();
+    // productDiv.scrollTop = 0;
+    const singlePageHeight =
+      productDiv.scrollHeight / CacheService.isTouched.length;
 
-    productDiv.scrollTop =
-      singlePageHeight * (this.getCurrentPage() - 1) +
-      1 -
-      productDiv.clientHeight;
+    let page = prev
+      ? CacheService.getSmallerPageIndex(paginationInstance.getPreviousPage())
+      : CacheService.isTouched.length;
+
+    productDiv.scrollTop = singlePageHeight * (page - 1);
   };
 
   handleNext = () => {
@@ -217,7 +306,7 @@ class Pagination {
       // } else {
       previousPage = this.getCurrentPage();
       this.setCurrentPage(this.currentPage - 1);
-      this.setPreviousPage(previousPage);
+
       // }
 
       this.getProducts(

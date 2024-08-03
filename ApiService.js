@@ -84,11 +84,14 @@ class ApiService extends BaseApiService {
         }
       } else {
         let endpoint = `posts?limit=${limit}&skip=${(page - 1) * limit}`;
-        if (prev) {
-          endpoint = `posts?limit=${limit * (page - previousPage)}&skip=${
-            previousPage * limit
-          }`;
-        }
+
+        CacheService.addToTouched(page, limit);
+
+        // if (prev) {
+        //   endpoint = `posts?limit=${limit * (page - previousPage)}&skip=${
+        //     previousPage * limit
+        //   }`;
+        // }
 
         return await this._get(endpoint);
       }
