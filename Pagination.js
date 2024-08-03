@@ -21,6 +21,7 @@ class Pagination {
   }
 
   setCurrentPage(page) {
+    console.trace();
     this.currentPage = page;
   }
 

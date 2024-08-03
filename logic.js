@@ -32,19 +32,29 @@ document.querySelector(".products").addEventListener("scroll", (event) => {
   }
 });
 
-document.getElementById("offset__Select").addEventListener("change", (e) => {
-  let newLimit = Number(e.target.value);
-  paginationInstance.previousPageLimit = paginationInstance.getTotalLimit();
-  paginationInstance.setTotalLimit(newLimit);
-  paginationInstance.setPreviousPage(paginationInstance.getCurrentPage());
-  paginationInstance.setCurrentPage(1);
-  paginationInstance.getProducts(
-    paginationInstance.getCurrentPage(),
-    paginationInstance.getTotalLimit(),
-    true,
-    true
-  );
-});
+document
+  .getElementById("offset__Select")
+  .addEventListener("change", async (e) => {
+    const newLimit = Number(e.target.value);
+    paginationInstance.previousPageLimit = paginationInstance.getTotalLimit();
+    paginationInstance.setTotalLimit(newLimit);
+    // paginationInstance.setPreviousPage(paginationInstance.getCurrentPage());
+
+    // Update cache for the new limit
+    // CacheService.updateTouchedForNewLimit(newLimit);
+
+    // // Calculate the new page based on the new limit
+    // const totalItems = paginationInstance.getTotalRecords();
+    // const newCurrentPage = Math.ceil(totalItems / newLimit);
+    // paginationInstance.setCurrentPage(newCurrentPage);
+
+    await paginationInstance.getProducts(
+      paginationInstance.getCurrentPage(),
+      paginationInstance.getTotalLimit(),
+      false,
+      true
+    );
+  });
 
 const checkCurrentPage = (clientHeight, scrollHeight, scrollTop) => {
   let reqDistribution = scrollHeight / CacheService.isTouched.length;

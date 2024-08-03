@@ -45,6 +45,93 @@ class Cache {
     return pageIndex;
   };
 
+  updateTouchedForNewLimit(newLimit) {
+    if (paginationInstance.previousPageLimit > newLimit) {
+      // create automatically pages
+      const totalItems = this.isTouched ? this.isTouched.length : 0;
+      let totalRecords = totalItems * paginationInstance.previousPageLimit;
+      let pagesRequired = totalRecords / newLimit;
+      let remainingPage = pagesRequired - totalItems;
+
+      let adjustedTouched = [];
+
+      for (let i = 0; i < totalItems; i++) {
+        let { page } = this.isTouched[i];
+        adjustedTouched.push({ page, limit: newLimit });
+        let nextNewPage = page + 1;
+        while (remainingPage > 0 && this.getPageIndex(nextNewPage) === -1) {
+          adjustedTouched.push({ page: nextNewPage, limit: newLimit });
+          remainingPage--;
+          nextNewPage++;
+        }
+      }
+
+      this.isTouched = adjustedTouched;
+      paginationInstance.setCurrentPage(
+        this.isTouched[this.isTouched.length - 1].page
+      );
+      paginationInstance.setPreviousPage(this.isTouched[0].page);
+      console.log(this.isTouched);
+
+      return { done: true };
+    } else {
+      let prevTakeEle = 1;
+      const adjustedTouched = [];
+      const totalItems = this.isTouched ? this.isTouched.length : 0;
+
+      if (totalItems == 0) return;
+      console.log("inside");
+
+      let totalRecords = totalItems * paginationInstance.previousPageLimit;
+
+      let remainingRecords = totalRecords % newLimit;
+      let reqIteration = Math.ceil(totalRecords / newLimit);
+      console.log(reqIteration);
+      if (remainingRecords > 0) {
+        for (let i = 0; i < reqIteration; i++) {
+          const { page, limit } = this.isTouched[i];
+
+          adjustedTouched.push({ page, limit: newLimit });
+        }
+        this.isTouched = adjustedTouched;
+        paginationInstance.setCurrentPage(
+          this.isTouched[this.isTouched.length - 1].page
+        );
+        paginationInstance.setPreviousPage(this.isTouched[0].page);
+
+        console.log(this.isTouched);
+        return { done: true };
+      } else {
+        for (let i = 0; i < reqIteration; i++) {
+          let page;
+          if (i > this.isTouched.length) {
+            page = prevTakeEle;
+            prevTakeEle += 1;
+          } else {
+            page = this.isTouched[i].page;
+          }
+
+          adjustedTouched.push({ page, limit: newLimit });
+        }
+        this.isTouched = adjustedTouched;
+        console.log(this.isTouched, " ------------------------");
+        paginationInstance.setCurrentPage(
+          this.isTouched[this.isTouched.length - 1].page
+        );
+        paginationInstance.setPreviousPage(this.isTouched[0].page);
+        return { done: false, req: remainingRecords };
+      }
+
+      // const newTotalPages = Math.ceil(totalItems / newLimit);
+
+      // for (let i = 1; i <= newTotalPages; i++) {
+      //   adjustedTouched.push({ page: i, limit: newLimit });
+      // }
+
+      // this.isTouched = adjustedTouched;
+    }
+  }
+
   getPageIndex = (page) => {
     let pageIndex = -1;
 
