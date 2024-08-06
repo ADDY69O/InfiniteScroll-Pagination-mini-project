@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mini Project</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+</head> 
+<body>
+    <div id="main">
+        <nav class="navbar">
+            <h1 class="nav__head">PostShala</h1>
+        </nav>
+        <section class="products"></section>
+        <section class="pagination">
+            <button class="pagination_prev" disabled onclick="paginationInstance.handleBack()">Prev</button>
+            <div class="pagination__btn"></div>
+            <button class="pagination__next" onclick="paginationInstance.handleNext()">Next</button>
+
+            <div class="offset"> 
+                <label for="offset__Select">Page Size</label>
+                <select name="offset__Select" id="offset__Select">
+                    <option value="10" selected>10</option>
+                    <option value="20">20</option>
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                </select>
+            </div>
+        </section>
+        <div id="loader" class="loader" style="display: none;">
+            <img class="loader__img" src="https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExdzR2d2ZwajJ5ajJ1YjY2MW9mYXI4ajczZXkzZjd5cWhjamZtdjd1aSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/9X3Fl6AdLfH5WcdHdt/giphy.webp" alt="Loading...">
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <script src="BaseApiService.js"></script>
+    <script src="ApiService.js"></script>
+    <script src="logic.js"></script>
+    <script src="CacheData.js"></script>
+    <script src="Pagination.js"></script>
+    <script src="Dom.js"></script>
+</body>
+</html>
